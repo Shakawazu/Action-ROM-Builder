@@ -1,4 +1,4 @@
-name: Recovery Build
+name: ROM Build
 
 on:
   workflow_dispatch:
@@ -14,11 +14,11 @@ on:
       DEVICE_TREE_URL:
         description: 'DEVICE_TREE_URL'
         required: true
-        default: 'https://github.com/qwertyuiii-code/device_xiaomi_chime-2.git'
+        default: 'https://github.com/chimeOSS/device_xiaomi_chime.git'
       DEVICE_TREE_BRANCH:
         description: 'DEVICE_TREE_BRANCH'
         required: true
-        default: 'thirteen'
+        default: 'lineage-20-unified'
       DEVICE_PATH:
         description: 'DEVICE_PATH'
         required: true
@@ -36,11 +36,7 @@ on:
       MAKEFILE_NAME:
         description: 'MAKEFILE_NAME'
         required: true
-        default: 'twrp_chime'
-      BUILD_TARGET:
-        description: 'BUILD_TARGET'
-        required: true
-        default: 'recovery'
+        default: 'lineage_chime'
 
 jobs:
   build:
@@ -85,7 +81,7 @@ jobs:
         mkdir workspace
         cd workspace
         echo "workspace-folder=$(pwd)" >> $GITHUB_OUTPUT
-        git config --global user.name "Windows3280 "
+        git config --global user.name "Windows3280"
         git config --global user.email "gdkirill47@gmail.com"
         repo init --depth=1 -u ${{ github.event.inputs.MANIFEST_URL }} -b ${{ github.event.inputs.MANIFEST_BRANCH }}
       id: pwd
@@ -109,18 +105,17 @@ jobs:
       run: |
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
-        lunch && make clean && make ${{ github.event.inputs.BUILD_TARGET }}image -j$(nproc --all)
-      working-directory: ${{ steps.pwd.outputs.workspace-folder }}
+        lunch ${{ github.event.inputs.MAKEFILE_NAME }}-buildtype && make clean && m bacon
 
     - name: Upload to Release
       uses: softprops/action-gh-release@v1
       with:
-        files: workspace/out/target/product/${{ github.event.inputs.DEVICE_NAME }}/${{ github.event.inputs.BUILD_TARGET }}.zip
+        files: workspace/out/target/product/*.zip
         name: ${{ github.event.inputs.DEVICE_NAME }}-${{ github.run_id }}
         tag_name: ${{ github.run_id }}
         body: |
           Manifest: ${{ github.event.inputs.MANIFEST_BRANCH }}
           Device: ${{ github.event.inputs.DEVICE_NAME }}
-          Target: ${{ github.event.inputs.BUILD_TARGET }}.img
+          Target: *.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
