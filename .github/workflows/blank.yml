@@ -37,14 +37,10 @@ on:
         description: 'MAKEFILE_NAME'
         required: true
         default: 'lineage_chime'
-      LUNCHING_COMMAND:
-        description: 'LUNCHING_COMMAND'
-        required: true
-        default: 'lunch lineage_chime-buildtype'
       MAKING_COMMAND:
         description: 'MAKING_COMMAND'
         required: true
-        default: 'm bacon'
+        default: 'lunch lineage_chime-buildtype && m bacon'
 
 
 jobs:
@@ -114,7 +110,7 @@ jobs:
       run: |
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
-        ${{ github.event.inputs.LUNCHING_COMMAND }} && make clean && ${{ github.event.inputs.MAKING_COMMAND }}
+        ${{ github.event.inputs.MAKING_COMMAND }}
 
     - name: Upload to Release
       uses: softprops/action-gh-release@v1
