@@ -46,7 +46,7 @@ on:
 jobs:
   build:
     if: github.event.repository.owner.id == github.event.sender.id
-    runs-on: ubuntu-22.04
+    runs-on: arch-latest
     steps:
     - name: Display Run Parameters
       run: |
@@ -59,22 +59,12 @@ jobs:
         echo "Device Name: ${{ github.event.inputs.DEVICE_NAME }}"
         echo "Makefile Name: ${{ github.event.inputs.MAKEFILE_NAME }}"
         echo "Build Target: ${{ github.event.inputs.BUILD_TARGET }}.img"
-        echo "::endgroup::"
- 
-    # You might want to Checkout your repo first, but not mandatory
-    - name: Check Out
-      uses: actions/checkout@v3
-    # Cleanup The Actions Workspace Using Custom Composite Run Actions
-    - name: Cleanup
-      uses: rokibhasansagar/slimhub_actions@main
-      # That's it! Now use your normal steps
-
+        echo "::endgroup::
+        
     - name: Prepare the environment
       run: |
-        sudo apt update
-        sudo apt -y upgrade
-        sudo apt -y install repo gperf gcc-multilib gcc-10-multilib g++-multilib g++-10-multilib liblz4-tool libncurses5-dev libstdc++-10-dev python3
-
+         pacman -Sy --needed base base-devel bc python python2 python-pip python2-pip jdk8-openjdk perl git gnupg flex bison gperf zip unzip sdl wxgtk squashfs-tools ncurses libpng zlib libusb libusb-compat readline inetutils schedtool gperf imagemagick lzop pngcrush rsync
+        
     - name: Install OpenJDK
       uses: actions/setup-java@v3
       with:
