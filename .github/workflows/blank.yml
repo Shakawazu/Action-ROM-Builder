@@ -46,7 +46,7 @@ on:
 jobs:
   build:
     if: github.event.repository.owner.id == github.event.sender.id
-    runs-on: arch-latest
+    runs-on: ubuntu-latest
     steps:
     - name: Display Run Parameters
       run: |
